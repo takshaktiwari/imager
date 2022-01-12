@@ -1,0 +1,28 @@
+{
+    "name": "takshak/imager",
+    "description": "Imager provider package for laravel",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Takshak\\Imager\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Takshak Tiwari",
+            "email": "takshaktiwari@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "intervention/image": "^2.7"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Takshak\\Imager\\ImagerServiceProvider"
+            ]
+        }
+    }
+}
