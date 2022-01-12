@@ -3,12 +3,12 @@
 namespace Takshak\Imager\Generators;
 
 use Illuminate\Support\Str;
-use Takshak\Imager\Traits\ImagerTrait;
+use Takshak\Imager\Traits\GeneratorTrait;
 use Takshak\Imager\Contracts\ImagerContract;
 
 class PlaceholderGenerator implements ImagerContract
 {
-	use ImagerTrait;
+	use GeneratorTrait;
 	
 	protected $baseUrl = 'https://via.placeholder.com';
 	protected $imageUrl;
@@ -53,12 +53,12 @@ class PlaceholderGenerator implements ImagerContract
 	}
 	public function background($background)
 	{
-		$this->background = $background;
+		$this->background = Str::of($background)->after('#');
 		return $this;
 	}
 	public function color($color)
 	{
-		$this->color = $color;
+		$this->color = Str::of($color)->after('#');
 		return $this;
 	}
 

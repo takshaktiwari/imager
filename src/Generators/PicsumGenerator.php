@@ -4,11 +4,11 @@ namespace Takshak\Imager\Generators;
 
 use Illuminate\Support\Str;
 use Takshak\Imager\Contracts\ImagerContract;
-use Takshak\Imager\Traits\ImagerTrait;
+use Takshak\Imager\Traits\GeneratorTrait;
 
 class PicsumGenerator implements ImagerContract
 {
-	use ImagerTrait;
+	use GeneratorTrait;
 
 	protected $baseUrl = 'https://picsum.photos';
 	protected $newImage;

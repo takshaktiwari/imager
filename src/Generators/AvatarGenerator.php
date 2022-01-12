@@ -4,11 +4,11 @@ namespace Takshak\Imager\Generators;
 
 use Illuminate\Support\Str;
 use Takshak\Imager\Contracts\ImagerContract;
-use Takshak\Imager\Traits\ImagerTrait;
+use Takshak\Imager\Traits\GeneratorTrait;
 
 class AvatarGenerator implements ImagerContract
 {
-	use ImagerTrait;
+	use GeneratorTrait;
 	
 	protected $baseUrl = 'https://ui-avatars.com/api';
 	protected $imageUrl;
@@ -27,66 +27,67 @@ class AvatarGenerator implements ImagerContract
 	public function __construct()
 	{
 		$this->imageUrl = $this->baseUrl;
-
 	}
 
 	public function name($name)
 	{
-		return $this->name = $name;
-
+		$this->name = $name;
+		return $this;
 	}
 
 	public function size($name)
 	{
-		return $this->size = $size;
-
+		$this->size = $size;
+		return $this;
 	}
 
 	public function fontsize($fontsize)
 	{
-		return $this->fontsize = $fontsize;
-
+		$this->fontsize = $fontsize;
+		return $this;
 	}
 
 	public function length($length)
 	{
-		return $this->length = $length;
-
+		$this->length = $length;
+		return $this;
 	}
+
 
 	public function rounded($rounded=true)
 	{
-		return $this->rounded = $rounded;
-
+		$this->rounded = $rounded;
+		return $this;
 	}
 
 	public function bold($bold=true)
 	{
-		return $this->bold = $bold;
-
+		$this->bold = $bold;
+		return $this;
 	}
 
 	public function color($color)
 	{
-		return $this->color = $color;
-
+		$this->color = Str::of($color)->after('#');
+		return $this;
 	}
 
 	public function background($background)
 	{
-		return $this->background = $background;
-
+		$this->background = Str::of($background)->after('#');
+		return $this;
 	}
 
 	public function uppercase($uppercase = true)
 	{
-		return $this->uppercase = $uppercase;
-
+		$this->uppercase = $uppercase;
+		return $this;
 	}
 
 	public function imageUrl()
 	{
 		return $this->imageUrl = Str::of($this->imageUrl)->append('?')
+		->append('name='.$this->name)
 		->append('&size='.$this->size)
 		->append('&font-size='.$this->fontsize)
 		->append('&length='.$this->length)

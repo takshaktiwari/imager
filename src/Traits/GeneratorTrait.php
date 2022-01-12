@@ -4,11 +4,12 @@ namespace Takshak\Imager\Traits;
 
 use Image;
 
-trait ImagerTrait {
+trait GeneratorTrait {
 
 	public function image($imageUrl='')
 	{
 		$this->imageUrl = $imageUrl ? $imageUrl : $this->imageUrl();
+
 		$this->newImage = Image::make($this->imageUrl);
 		return $this;
 	}
