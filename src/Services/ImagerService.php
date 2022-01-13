@@ -1,48 +1,58 @@
 <?php
 namespace Takshak\Imager\Services;
 
-use Str;
 use Image;
+use Illuminate\Filesystem\Filesystem;
 use Storage;
+use Str;
 
 class ImagerService
 {
-	protected $img;
-	protected $width;
-	protected $height;
-	protected $basePath;
-	protected $quality = 80;
-	protected $ext = 'jpg';
+    protected $img;
+    protected $width;
+    protected $height;
+    protected $basePath;
+    protected $quality = 80;
+    protected $ext = 'jpg';
 
     public function __construct($image=null)
     {
-    	if ($image) {
-        	$this->img = Image::make($image);
-    	}
+        if ($image) {
+            $this->img = Image::make($image);
+            $this->backup();
+            return $this;
+        }
     }
 
     public function init($image)
     {
-    	$this->img = Image::make($image);
-    	return $this;
+        $this->img = Image::make($image);
+        $this->backup();
+        return $this;
+    }
+
+    public function backup()
+    {
+        $this->img->backup();
+        return $this;
     }
 
     public function width($width)
     {
-    	$this->width = $width;
-    	return $this;
+        $this->width = $width;
+        return $this;
     }
 
     public function height($height)
     {
-    	$this->height = $height;
-    	return $this;
+        $this->height = $height;
+        return $this;
     }
 
     public function resizeWidth($width='')
     {
-    	$width = $width ? $width : $this->width;
-        $this->img->resize($width, null, function ($constraint) {
+        $this->width = $width ? $width : $this->width;
+        $this->img->resize($this->width, null, function ($constraint) {
             $constraint->aspectRatio();
         });
         
@@ -51,8 +61,8 @@ class ImagerService
 
     public function resizeHeight($height='')
     {
-    	$height = $height ? $height : $this->height;
-        $this->img->resize(null, $height, function ($constraint) {
+        $this->height = $height ? $height : $this->height;
+        $this->img->resize(null, $this->height, function ($constraint) {
             $constraint->aspectRatio();
         });
         return $this;
@@ -60,21 +70,21 @@ class ImagerService
 
     public function resize($width='', $height='')
     {
-    	$width = $width ? $width : $this->width;
-    	$height = $height ? $height : $this->height;
+        $this->width = $width ? $width : $this->width;
+        $this->height = $height ? $height : $this->height;
 
-        $this->img->resize($width, $height);
+        $this->img->resize($this->width, $this->height);
         return $this;
     }
 
     public function resizeFit($width='', $height='')
     {
-        $width = $width ? $width : $this->width;
-        $height = $height ? $height : $this->height;
+        $this->width = $width ? $width : $this->width;
+        $this->height = $height ? $height : $this->height;
 
-        $this->resizeWidth($width);
-        if ($this->img->height() > $height) {
-            $this->resizeHeight($height);
+        $this->resizeWidth($this->width);
+        if ($this->img->height() > $this->height) {
+            $this->resizeHeight($this->height);
         }
         return $this;
     }
@@ -99,18 +109,18 @@ class ImagerService
 
     public function basePath($path)
     {
-    	$this->basePath = $path;
-    	return $this;
+        $this->basePath = $path;
+        return $this;
     }
 
     public function save($path, $width=null)
     {
-    	$path = Str::of($this->basePath)->append('/'.$path)
-    	->replace('//', '/')->replace('//', '/');
+        $path = Str::of($this->basePath)->append('/'.$path)
+        ->replace('//', '/')->replace('//', '/');
 
-    	if ($width) {
-    		$this->resizeWidth($width);
-    	}
+        if ($width) {
+            $this->resizeWidth($width);
+        }
 
         $this->checkDirectory($path);
         $this->img->save($path, $this->quality, $this->ext);
@@ -121,13 +131,13 @@ class ImagerService
     {
         if (!is_dir($path)) {
             $directory = Str::of($path)->beforeLast('/');
-            Storage::makeDirectory($directory);
+            (new Filesystem)->ensureDirectoryExists($directory);
         }
     }
 
     public function response()
     {
-    	return $this->img->response();
+        return $this->img->response();
     }
 
 
