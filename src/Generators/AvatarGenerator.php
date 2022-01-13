@@ -31,7 +31,7 @@ class AvatarGenerator implements ImagerContract
 
 	public function name($name)
 	{
-		$this->name = $name;
+		$this->name = urlencode($name);
 		return $this;
 	}
 
@@ -86,7 +86,7 @@ class AvatarGenerator implements ImagerContract
 
 	public function imageUrl()
 	{
-		return $this->imageUrl = Str::of($this->imageUrl)->append('?')
+		return $this->imageUrl = Str::of($this->baseUrl)->append('?')
 		->append('name='.$this->name)
 		->append('&size='.$this->size)
 		->append('&font-size='.$this->fontsize)

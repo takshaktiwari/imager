@@ -52,6 +52,13 @@ class PicsumGenerator implements ImagerContract
 		return $this;
 	}
 
+	public function dimensions($width=500, $height=500)
+	{
+		$this->imgWidth = $width;
+		$this->imgHeight = $height;
+		return $this;
+	}
+
 	public function grayscale($bool=true)
 	{
 		$this->grayscale = $bool;
@@ -82,7 +89,7 @@ class PicsumGenerator implements ImagerContract
 
 	public function imageUrl()
 	{
-		$url = Str::of($this->imageUrl);
+		$url = Str::of($this->baseUrl);
 
 		if ($this->imgId) {
 			$url = $url->append('/id/'.$this->imgId);

@@ -131,7 +131,7 @@ class ImagerService
     {
         if (!is_dir($path)) {
             $directory = Str::of($path)->beforeLast('/');
-            (new Filesystem)->ensureDirectoryExists($directory);
+            (new Filesystem)->makeDirectory($directory, 755, true, true);
         }
     }
 

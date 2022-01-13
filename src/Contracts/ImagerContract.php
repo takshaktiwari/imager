@@ -10,6 +10,6 @@ interface ImagerContract {
 
 	public function response();
 	
-	public function save($path, $quality, $extension);
+	public function save($path, $width, $quality);
 
 }
