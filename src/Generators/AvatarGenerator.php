@@ -35,7 +35,7 @@ class AvatarGenerator implements ImagerContract
 		return $this;
 	}
 
-	public function size($name)
+	public function size($size)
 	{
 		$this->size = $size;
 		return $this;
