@@ -2,11 +2,14 @@
 
 namespace Takshak\Imager\Generators;
 
-use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Takshak\Imager\Traits\GeneratorTrait;
 
 class PlaceholderGenerator
 {
+	use GeneratorTrait;
+	
 	protected $width = 500;
 	protected $height = 500;
 	protected $background = '#ccc';
@@ -14,19 +17,19 @@ class PlaceholderGenerator
 
 	protected $extension = 'jpg';
 	protected $text = 'Lorem Ipsom';
-	protected $color = '333';
+	protected $textFormat;
 	protected $basePath;
+	protected $filePath;
 
-	public function width($width)
+	public function __construct($value='')
 	{
-		$this->width = $width;
-		return $this;
-	}
-
-	public function height($height)
-	{
-		$this->height = $height;
-		return $this;
+		$this->textFormat = [
+			'size'	=>	24,
+			'color'	=>	'#000',
+			'align'	=>	'center',
+			'valign'	=>	'center',
+			'angle'		=>	null
+		];
 	}
 
 	public function background($background)
@@ -35,14 +38,7 @@ class PlaceholderGenerator
 		return $this;
 	}
 
-	public function dimensions($width, $height)
-	{
-		$this->width = $width;
-		$this->height = $height;
-		return $this;
-	}
-
-	public function canvas($width=null, $height=null, $background=null)
+	public function image($width=null, $height=null, $background=null)
 	{
 		if($width){
 			$this->width = $width;
@@ -58,135 +54,82 @@ class PlaceholderGenerator
 		return $this;
 	}
 
-	public function fill($background)
-	{
-		if(!$this->img){
-			$this->canvas();
-		}
-
-		$this->img->fill($background);
-		return $this;
-	}
-
 	public function text($text='Placeholder Image', $format=[])
 	{
 		if(!$this->img){
-			$this->canvas();
+			$this->image();
 		}
 
 		$this->text = $text ? $text : $this->text;
+		$this->textFormat['size'] = isset($format['size']) 
+			? $format['size'] 
+			: $this->textFormat['size'];
 
-		$format['size'] = isset($format['size']) ? $format['size'] : 24;
+		$this->textFormat['color'] = isset($format['color']) 
+			? $format['color'] 
+			: $this->textFormat['color'];
+
+		$this->textFormat['align'] = isset($format['align']) 
+			? $format['align'] 
+			: $this->textFormat['align'];
+
+		$this->textFormat['valign'] = isset($format['valign']) 
+			? $format['valign'] 
+			: $this->textFormat['valign'];
+
+		$this->textFormat['angle'] = isset($format['angle']) 
+			? $format['angle'] 
+			: $this->textFormat['angle'];
 
 		if(is_array($text)){
 			foreach ($text as $key => $line) {
 				$y = $this->height - (count($text) * $format['size']);
 				$y = $y / 2;
-				$y = $y + ($format['size'] * $key);
+				$y = $y + ($this->textFormat['size'] * $key);
 
-				$this->img->text($line, $this->width/2, $y, function($font) use ($format) {
-					$font->file(__DIR__.'/../../fonts/Poppins-Regular.ttf');
-				    $font->size($format['size']);
-				    $font->color(isset($format['color']) ? $format['color'] : '#000');
-				    $font->align(isset($format['align']) ? $format['align'] : 'center');
-				    $font->valign(isset($format['valign']) ? $format['valign'] : 'center');
-
-				    if(isset($format['valign']))
-				    {
-				    	$font->angle($format['valign']);
-				    }
+				$this->img->text($line, $this->width/2, $y, function($font) {
+					$this->fontFormat($font);
 				});
 			}
 
 			return $this;
 		}
 
-		$this->img->text(
-			$this->text, 
-			$this->width/2, 
-			$this->height/2, 
-			function($font) use ($format) {
-				$font->file(__DIR__.'/../../fonts/Poppins-Regular.ttf');
-			    $font->size($format['size']);
-			    $font->color(isset($format['color']) ? $format['color'] : '#000');
-			    $font->align(isset($format['align']) ? $format['align'] : 'center');
-			    $font->valign(isset($format['valign']) ? $format['valign'] : 'center');
-
-			    if(isset($format['valign']))
-			    {
-			    	$font->angle($format['valign']);
-			    }
+		$this->img->text($this->text, $this->width/2, $this->height/2, function($font){
+			$this->fontFormat($font);
 		});
 
 		return $this;
 	}
 
-	public function resizeWidth($width='')
+	public function fontFormat($font)
 	{
-		if(!$this->img){
-			$this->canvas();
-		}
+		$font->file(__DIR__.'/../../fonts/Poppins-Regular.ttf');
+	    $font->size($this->textFormat['size']);
+	    $font->color($this->textFormat['color']);
+	    $font->align($this->textFormat['align']);
+	    $font->valign($this->textFormat['valign']);
 
-	    $this->width = $width ? $width : $this->width;
-	    $this->img->resize($this->width, null, function ($constraint) {
-	        $constraint->aspectRatio();
-	    });
-	    
-	    return $this;
-	}
-
-	public function response()
-	{
-		if(!$this->img){
-			$this->canvas();
-		}
-		return $this->img->response($this->extension);
-	}
-
-	public function basePath($path)
-	{
-	    $this->basePath = $path;
-	    return $this;
-	}
-
-	public function save($path, $width=null, $quality=80)
-	{
-		$this->store($path, $width, $quality=80);
-		return $this;
-	}
-
-	public function copy($path, $width=null, $quality=80)
-	{
-		$this->store($path, $width, $quality=80);
-		return $this;
-	}
-
-	public function store($path, $width=null, $quality=80)
-	{
-		if(!$this->img){
-			$this->canvas();
-		}
-
-		if ($width) {
-			$this->resizeWidth($width);
-		}
-
-		if ($this->basePath) {
-			$path = Str::of($this->basePath)->append('/'.$path)
-			->replace('//', '/')->replace('//', '/');
-		}
-	    
-	    $this->checkDirectory($path);
-	    $this->img->save($path, $quality);
-	    return $this;
-	}
-
-	public function checkDirectory($path)
-	{
-	    if (!is_dir($path)) {
-	        $directory = Str::of($path)->beforeLast('/');
-	        (new Filesystem)->ensureDirectoryExists($directory);
+	    if(isset($this->textFormat['angle']))
+	    {
+	    	$font->angle($this->textFormat['angle']);
 	    }
 	}
 
+	public function url()
+	{
+		$params = [
+			'w' => $this->width,
+			'h' => $this->height,
+			'bg' => $this->background,
+			'text' => $this->text,
+			'text_color' => $this->textFormat['color'],
+			'text_size' => $this->textFormat['size'],
+			'text_angle' => $this->textFormat['angle'],
+			'text_align' => $this->textFormat['align'],
+			'text_valign' => $this->textFormat['valign'],
+		];
+
+		return route('imgr.placeholder', $params);
+	}
 }

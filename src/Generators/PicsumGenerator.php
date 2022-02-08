@@ -2,124 +2,91 @@
 
 namespace Takshak\Imager\Generators;
 
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Str;
-use Takshak\Imager\Contracts\ImagerContract;
+use Storage;
 use Takshak\Imager\Traits\GeneratorTrait;
 
-class PicsumGenerator implements ImagerContract
+class PicsumGenerator
 {
 	use GeneratorTrait;
 
-	protected $baseUrl = 'https://picsum.photos';
-	protected $newImage;
-
-	protected $imageUrl;
-	protected $imgHeight = 500;
-	protected $imgWidth = 500;
-	protected $extension = 'jpg';
-	protected $imgId;
-	protected $seed;
-	protected $grayscale;
-	protected $blur;
-	protected $random;
+	public $width;
+	public $height;
+	public $bucket;
+	public $disk;
+	public $storage;
+	public $sourceDir;
+	public $img;
+	public $extension = 'jpg';
 
 	public function __construct()
 	{
-		$this->imageUrl = $this->baseUrl;
-	}
+		$this->width = 1500;
+		$this->height = 1500;
+		$this->disk = 'local';
+		$this->sourceDir = 'imgr-bucket/';
 
-	public function id($id)
-	{
-		$this->imgId = $id;
-		return $this;
-	}
+		$this->disk();
 
-	public function seed($key)
-	{
-		$this->seed = $key;
-		return $this;
-	}
-
-	public function width($width=500)
-	{
-		$this->imgWidth = $width;
-		return $this;
-	}
-
-	public function height($height=500)
-	{
-		$this->imgHeight = $height;
-		return $this;
-	}
-
-	public function dimensions($width=500, $height=500)
-	{
-		$this->imgWidth = $width;
-		$this->imgHeight = $height;
-		return $this;
-	}
-
-	public function grayscale($bool=true)
-	{
-		$this->grayscale = $bool;
-		return $this;
-	}
-
-	public function blur($scale=1)
-	{
-		$this->blur = $scale;
-		return $this;
-	}
-
-	public function random($number='')
-	{
-		$this->random = $number ? $number : rand();
-		return $this;
-	}
-
-	public function extension($ext='jpg')
-	{
-		$this->extension = $ext;
-		return $this;
-	}
-	public function format($ext='jpg')
-	{
-		return $this->extension($ext);
-	}
-
-	public function imageUrl()
-	{
-		$url = Str::of($this->baseUrl);
-
-		if ($this->imgId) {
-			$url = $url->append('/id/'.$this->imgId);
-
-		}elseif($this->seed){
-			$url = $url->append('/seed/'.$this->seed);
+		if ($this->isEmpty()) {
+			$this->seed();
 		}
-
-		$url = $url->append('/'.$this->imgWidth);
-		$url = $url->append('/'.$this->imgHeight);
-		$url = $url->append('.'.$this->extension);
-
-		$url = $url->append('?');
-
-		if ($this->grayscale) {
-			$url = $url->append('&grayscale=');
-		}
-		if ($this->blur) {
-			$url = $url->append('&blur='.$this->blur);
-		}
-		if ($this->random) {
-			$url = $url->append('&random='.$this->random);
-		}
-
-		$url = $url->replace('?&', '?');
-		$url = $url->replace('=&', '&');
-
-		return $this->imageUrl = $url;
 	}
 
-	
+	public function bucket($bucket='imgr-bucket/')
+	{
+		$this->sourceDir = $bucket;
+		(new Filesystem)->ensureDirectoryExists($this->storage->path($this->sourceDir));
+		return $this;
+	}
+
+	public function disk($disk='local')
+	{
+		$this->storage = Storage::disk($disk);
+		(new Filesystem)->ensureDirectoryExists($this->storage->path($this->sourceDir));
+		return $this;
+	}
+
+	public function seed($count=10)
+	{	
+		for ($i=0; $i < $count; $i++) { 
+			$fileName = Str::of(microtime())->slug('-')->append('.jpg');
+			copy(
+				'https://picsum.photos/'.$this->width.'/'.$this->height,
+				$this->storage->path($this->sourceDir).$fileName
+			);
+		}
+		return $this;
+	}
+
+	public function flush()
+	{
+		(new Filesystem)->cleanDirectory($this->storage->path($this->sourceDir));
+		return $this;
+	}
+
+	public function refresh($count=10)
+	{
+		$this->flush();
+		$this->seed($count);
+		return $this;
+	}
+
+	public function isEmpty()
+	{
+		$files = $this->storage->files($this->sourceDir);
+		return count($files) ? false : true;
+	}
+
+	public function image($width=null, $height=null)
+	{
+		$files = $this->storage->files($this->sourceDir);
+		shuffle($files);
+
+		$this->img = \Image::make($this->storage->path(end($files)))->crop($this->width, $this->height);
+		return $this;
+	}
+
 
 }

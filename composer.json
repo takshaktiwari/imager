@@ -24,7 +24,6 @@
                 "Takshak\\Imager\\ImagerServiceProvider"
             ],
             "aliases": {
-                "Avatar": "Takshak\\Imager\\Facades\\Avatar",
                 "Picsum": "Takshak\\Imager\\Facades\\Picsum",
                 "Placeholder": "Takshak\\Imager\\Facades\\Placeholder",
                 "Imager": "Takshak\\Imager\\Facades\\Imager"
