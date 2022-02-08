@@ -21,6 +21,11 @@ class PlaceholderGenerator
 	protected $basePath;
 	protected $filePath;
 
+	protected $blur;
+	protected $greyscale;
+	protected $flip;
+	protected $rotate;
+
 	public function __construct($value='')
 	{
 		$this->textFormat = [
@@ -122,13 +127,29 @@ class PlaceholderGenerator
 			'w' => $this->width,
 			'h' => $this->height,
 			'bg' => $this->background,
+			'ext' => $this->extension,
 			'text' => $this->text,
 			'text_color' => $this->textFormat['color'],
 			'text_size' => $this->textFormat['size'],
-			'text_angle' => $this->textFormat['angle'],
 			'text_align' => $this->textFormat['align'],
 			'text_valign' => $this->textFormat['valign'],
 		];
+
+		if ($this->textFormat['angle']) {
+			$params['text_angle'] = $this->textFormat['angle'];
+		}
+		if ($this->blur) {
+			$params['blur'] = $this->blur;
+		}
+		if ($this->greyscale) {
+			$params['greyscale'] = $this->greyscale;
+		}
+		if ($this->flip) {
+			$params['flip'] = $this->flip;
+		}
+		if ($this->rotate) {
+			$params['rotate'] = $this->rotate;
+		}
 
 		return route('imgr.placeholder', $params);
 	}

@@ -27,6 +27,12 @@ trait GeneratorTrait {
 		return $this;
 	}
 
+	public function extension($extension)
+	{
+		$this->extension = $extension;
+		return $this;
+	}
+
 	public function resizeWidth($width='')
 	{
 		if(!$this->img){
@@ -108,19 +114,29 @@ trait GeneratorTrait {
 
 	public function blur($amount=1)
 	{
+		$this->blur = $amount;
 		$this->img->blur($amount);
 		return $this;
 	}
 
 	public function greyscale()
 	{
+		$this->greyscale = true;
 		$this->img->greyscale();
 		return $this;
 	}
 
 	public function rotate($deg=45)
 	{
+		$this->rotate = $deg;
 		$this->img->rotate($deg);
+		return $this;
+	}
+
+	public function flip($direction='h')
+	{
+		$this->direction = $direction;
+		$this->img->flip($direction);
 		return $this;
 	}
 
