@@ -17,6 +17,32 @@ Simple uses
 
     \Imager::init($request->file('image_file'))->resizeFit(500, 500)->response();
 
+## Placeholder (Dummy / Avatar image provider)
+You can have some fake images of may be some placeholder images with specified dimensions, having some written text and also in different colours. You can also generate user avatars also. Image can be further resized, saved to folder and also can be saved to model.
+
+**`background($hexColor):`**  Set the color of image background
+
+**`image($width=null, $height=null, $background=null):`** Instantiate the image if image is not already generated all the parameters are optional
+
+**`text($text='Placeholder Image', $format=[]):`** Write text on the image and format the text as well. Possible format array keys are: size, color, align, valign, angle. Eg. 
+
+    \Placeholder::dimensions(500, 500)
+    	->text('dummy text', [
+    		'size'	=>	50,
+    		'color'	=>	'#000',
+    		'align'	=>	'center',
+    		'valign'	=>	'center',
+    		'angle'		=>	45
+    	])
+    	->response();
+
+**`url():`** Generates the local URL for given type of image. Specified image can be also called by this URL
+
+For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
+
+Default values:
+`$width = 500;` `$height = 500;` `$background = '#ccc';` `$extension = 'jpg';` `$textFormating = [ 'size'	=>	24, 'color'	=>	'#000', 'align'	=>	'center', 'valign'	=>	'center', 'angle'		=>	null ];`
+
 ## Picsum (Fake image provider)
 
 It provides some images to fake database or can used as placeholder. This stores some images to it's bucket and then returns randomly generated images as requested. Functions and default parameters are given below:
@@ -86,7 +112,36 @@ Following methods can be called to all above tools
 **`others(function($image){}):`** Passes the image through other function (intervention/image) for further manipulations.
 
 
-## Picsum Use Cases
+## Placeholder - Some Uses
+Getting Default dummy image
+
+    \Placeholder::text('Some Info Text')->response();
+
+Customised Text in image
+
+    \Placeholder::text('Some Info Text', [
+    	'size'	=>	24,
+    	'color'	=>	'#000',
+    	'align'	=>	'center',
+    	'valign'	=>	'center',
+    	'angle'		=>	45
+    ])->response();
+
+Create dummy user avatar
+
+    \Placeholder::dimensions(200, 200)->text('JD')->response();
+
+Save image to folder and model
+
+    \Placeholder::text('Some dummy text')
+    ->basePath(\Storage::disk('local')->path('images'))
+    ->save('image-lg.jpg')
+    ->saveModel($user, 'profile_img', 'image-lg.jpg')
+    ->save('image-md.jpg', 300)
+    ->saveModel($user, 'profile_img', 'image-md.jpg')
+    ->response();
+
+## Picsum - Some Uses
 
 Resize image during save
 
@@ -109,7 +164,7 @@ Save path to model
     	->save(path:'path/image.jpg')
     	->saveModel(User::first(), 'profime_img', path:'path/image.jpg');
 
-Get url for the image
+Get URL for the image
 
     Picsum::dimensions(500, 500)->url();
 
@@ -119,6 +174,7 @@ Other intervention callback function
     $img->others(function($img){
     	$img->crop(100, 100);
     });
+    return $img->response();
 
 Save image to a model
 
