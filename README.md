@@ -37,7 +37,7 @@ It provides some images to fake database or can used as placeholder. This stores
 
 **`image():`** Instantiate the image if image is not already generated
 
-For all other functions please refer to common methods
+For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
 
 ## Imager (Easy image manipulation)
 
@@ -53,7 +53,7 @@ This can used to resize or fit an image within a dimensions or for other manipul
 
 **`inCanvas($bg=null):`** If you want to generate image with any coloured background, eg. (#fff)
 
-For all other functions please refer to common methods
+For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
 
 ## Common Methods
 
