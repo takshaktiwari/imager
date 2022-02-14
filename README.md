@@ -87,6 +87,24 @@ It provides some images to fake database or can used as placeholder. This stores
 
 For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
 
+### Generating picsum image from URL
+Base URL: `http://project.com/imgr/picsum?paramters`
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| width / w | 1000 | Width of image |
+| height / h | 1000 | Height of image |
+| extension / ext | 'jpg' | Image format |
+| refresh | 10 | Flush all bucket image and seed new ones |
+| seed | 10 | Seed new images |
+| flush |  | Flush all bucket images |
+| blur | 1 | Blur image, pass the blur amount  |
+| greyscale | | Make image greyscale  |
+| flip | | Flip the image. Possible values: v / h |
+| rotate | | Rotates image, (accepts integer, eg. ?rotage=45)  |
+
+Sample image URL: `http://project.com/imgr/picsum?w=150&h=150&blur=1&greyscale=1`
+
 ## Imager (Easy image manipulation)
 
 This can used to resize or fit an image within a dimensions or for other manipulations. This provides following methods:
