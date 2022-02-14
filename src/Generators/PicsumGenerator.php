@@ -103,6 +103,9 @@ class PicsumGenerator
 		$this->height = $height ? $height : $this->height;
 
 		$files = $this->storage->files($this->sourceDir);
+		$files = array_filter($files, function($file){
+			return Str::of($file)->contains('gitignore') ? false : true;
+		});
 		shuffle($files);
 
 		$this->img = \Image::make($this->storage->path(end($files)))->crop($this->width, $this->height);

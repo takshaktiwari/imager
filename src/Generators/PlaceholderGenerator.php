@@ -88,7 +88,7 @@ class PlaceholderGenerator
 
 		if(is_array($text)){
 			foreach ($text as $key => $line) {
-				$y = $this->height - (count($text) * $format['size']);
+				$y = $this->height - (count($text) * $this->textFormat['size']);
 				$y = $y / 2;
 				$y = $y + ($this->textFormat['size'] * $key);
 

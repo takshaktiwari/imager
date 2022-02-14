@@ -1,84 +1,96 @@
 # Introduction
 
-Image faker and provider package
+This package gives you three different tools, which are useful to fake, seed, generate placeholders and manipulate images. These tools are named as Picsum (provides images to seed database, or helps in creating model factories), Placeholder (generates placeholder images for specific location in different sizes and colors), Imager (manipulates images in desired sizes, can be used to resize an image if you dont want to cut any of edge of the images). These manipulatons can be also called from the URL.
 
-// set dimentions
-Picsum::dimensions(width: 1000, height: 1000);
-Picsum::width(1000)->height(1000);
+## Quick Start
 
-// set bucket name
-Picsum::bucket(1000)
+Install the package with composer
+`composer require takshak/imager`
 
-// set disk name
-Picsum::disk(1000)
+Simple uses
+`\Picsum::dimensions(500, 500)->response();`
+`\Placeholder::dimensions(500, 500)->text('Some Info Text')->response();`
+`\Imager::init($request->file('image_file'))->resizeFit(500, 500)->response();`
 
-// seed count optinal
-Picsum::seed(count: 10);
+## Picsum (Fake image provider)
 
-// flush bucket
-Picsum::flush();
+It provides some images to fake database or can used as placeholder. This stores some images to it's bucket and then returns randomly generated images as requested. Funtions and default paramters are given below:
 
-// flush and seed bucket
-Picsum::refresh(count: 10);
+bucket($foldername): Name of source folder from where the images will be faked. If not setted default 'imgr-bucket' folder will be used.
+disk($disk='local'): Storage disk name
+seed(int: $count=10): Seed the bucket with some dummy images
+flush(): Flush all the images from bucket
+refresh(int: $count=10): Flush all the images from bucket and seed new images
+isEmpty(): Checks if the bucket is empty
+url(): Generates the local url for given type of image. Specified image can be also called by this url
+image(): Instatiate the image if image is not already generated
 
-// check if bucket empty
-Picsum::isEmpty();
+For all other functions please refer to common methods
 
-// get image response
-Picsum::response();
+## Imager (Easy image manipulation)
 
-// get image blur
-Picsum::blur();
+This can used to resize or fit an image within a dimentions or for other manipulations. This provides following methods:
 
-// get image rotate
-Picsum::rotate();
+init($image): Receives an image file / path / url to work on 
+resizeHeight(int: $height): Defines the height of the image in pixcels. (parameter optional if height() function has been already called) |
+resize(int: $width, int: $height): Defines the width and height of the image in pixcels (image may squeeze or edges can be cropped). (parameters are optional if height(), width() or dimentions() function has been already called) |
+resizeFit(int: $width, int: $height): Defines the width and height of the image in pixcels wichever fits the best, none of the edge will be cropped and image will never stretch. (parameters are optional if height(), width() or dimentions() function has been already called) |
+inCanvas($bg=null): If you want to generate image with any colored background, eg. (#fff)
 
-// get image greyscale
-Picsum::greyscale();
+For all other functions please refer to common methods
 
-// get image flip
-Picsum::flip();
+## Common Methods
 
-// prepare an image
-Picsum::image();
+Following methods can be called to all above tools
 
-// other intervention callback function
-$img = Picsum::image()->flip();
-$img->others(function($img){
-	$img->crop(100, 100);
-});
+width(int: $width): Define the width of image
+height(int: $height): Define the height of image
+dimensions(int: $dimensions): Width and height can be defined at once usin this function instead of width() and height()
+extension($extention): Extension of image, eg: 'png' or 'jpg'
+response($extention=null): Returns the image as a response.
+basePath($path): Set the base folder name where you want to store the image
+save($path, $width=null): Save the path to any location. Width parameter is optional. Image will get resized were width will be passed
+saveModel($model, $column, $filePath): Saves image path to the model.
+blur(int: $amount=1): Blur the image
+greyscale(): Makes image greyscale
+rotate(int: $deg=45): Rotates image on $deg degree
+flip($direction='h'): Flips the image, possible values(v or h)
+others(function($image){}): Passes the image through other function (intervention/image) for further manipulations.
 
-// save generated image
-Picsum::dimensions(200, 200)->save(path:'path/image.jpg');
-Picsum::dimensions(200, 200)->copy(path:'path/image.jpg');
-Picsum::dimensions(200, 200)->store(path:'path/image.jpg');
 
+## Picsum Use Cases
 
 // resize image during save
-Picsum::dimensions(200, 200)->save(path:'path/image.jpg', 100);
+`Picsum::dimensions(200, 200)->save(path:'path/image.jpg', 100);`
 
 // save at multiple locations
-Picsum::dimensions(500, 500)
+`Picsum::dimensions(500, 500)
 	->save(path:'path/image.jpg')
 	->save(path:'path/image-md.jpg', 300)
-	->save(path:'path/image-sm.jpg', 100);
+	->save(path:'path/image-sm.jpg', 100);`
 
 // get image url
-Picsum::dimensions(500, 500)->image()->url();
+`Picsum::dimensions(500, 500)->image()->url();`
 
 // save path to model
-Picsum::dimensions(500, 500)
+`Picsum::dimensions(500, 500)
 	->save(path:'path/image.jpg')
-	->saveModel(User::first(), 'profime_img', path:'path/image.jpg')
+	->saveModel(User::first(), 'profime_img', path:'path/image.jpg');`
 
 // get url for the image
-Picsum::dimensions(500, 500)->url();
+`Picsum::dimensions(500, 500)->url();`
 
-// Advance use
-$post = Post::first();
+// other intervention callback function
+`$img = Picsum::image()->flip();
+$img->others(function($img){
+	$img->crop(100, 100);
+});`
+
+// Save image to a model
+`$post = Post::first();
 Picsum::dimensions(500, 500)
 	->save(path:'path/image.jpg')->saveModel($post, 'image_lg', path:'path/image.jpg')
 	->save(path:'path/image-sm.jpg', 100)->saveModel($post, 'image_sm', path:'path/image-sm.jpg')
 	->image(500, 400)
 	->save(path:'path/image.jpg')->saveModel(Post::find(2), 'image_lg', path:'path/image.jpg')
-	->url()
+	->url();`

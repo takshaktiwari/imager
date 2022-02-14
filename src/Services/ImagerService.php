@@ -1,25 +1,27 @@
 <?php
 namespace Takshak\Imager\Services;
 
-use Image;
 use Illuminate\Filesystem\Filesystem;
+use Image;
 use Storage;
 use Str;
+use Takshak\Imager\Traits\GeneratorTrait;
 
 class ImagerService
 {
+    use GeneratorTrait;
+
     protected $img;
     protected $width;
     protected $height;
     protected $basePath;
     protected $quality = 80;
-    protected $ext = 'jpg';
+    protected $extension = 'jpg';
 
     public function __construct($image=null)
     {
         if ($image) {
             $this->img = Image::make($image);
-            $this->backup();
             return $this;
         }
     }
@@ -27,35 +29,12 @@ class ImagerService
     public function init($image)
     {
         $this->img = Image::make($image);
-        $this->backup();
         return $this;
     }
 
-    public function backup()
+    public function image($image)
     {
-        $this->img->backup();
-        return $this;
-    }
-
-    public function width($width)
-    {
-        $this->width = $width;
-        return $this;
-    }
-
-    public function height($height)
-    {
-        $this->height = $height;
-        return $this;
-    }
-
-    public function resizeWidth($width='')
-    {
-        $this->width = $width ? $width : $this->width;
-        $this->img->resize($this->width, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-        
+        $this->init($image);
         return $this;
     }
 
@@ -94,51 +73,5 @@ class ImagerService
         $this->img = Image::canvas($this->width, $this->height, $bg)->insert($this->img, 'center');
         return $this;
     }
-
-    public function extension($ext)
-    {
-        $this->ext = $ext;
-        return $this;
-    }
-
-    public function quality($quality)
-    {
-        $this->quality = $quality;
-        return $this;
-    }
-
-    public function basePath($path)
-    {
-        $this->basePath = $path;
-        return $this;
-    }
-
-    public function save($path, $width=null)
-    {
-        $path = Str::of($this->basePath)->append('/'.$path)
-        ->replace('//', '/')->replace('//', '/');
-
-        if ($width) {
-            $this->resizeWidth($width);
-        }
-
-        $this->checkDirectory($path);
-        $this->img->save($path, $this->quality, $this->ext);
-        return $this;
-    }
-
-    public function checkDirectory($path)
-    {
-        if (!is_dir($path)) {
-            $directory = Str::of($path)->beforeLast('/');
-            (new Filesystem)->makeDirectory($directory, 755, true, true);
-        }
-    }
-
-    public function response()
-    {
-        return $this->img->response();
-    }
-
 
 }
