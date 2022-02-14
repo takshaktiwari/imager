@@ -115,7 +115,7 @@ This can used to resize or fit an image within a dimensions or for other manipul
 
 **`resize(int: $width, int: $height):`** Defines the width and height of the image in pixels (image may squeeze or edges can be cropped). (parameters are optional if height(), width() or dimensions() function has been already called).
 
-`**resizeFit(int: $width, int: $height):**` Defines the width and height of the image in pixels whichever fits the best, none of the edge will be cropped and image will never stretch. (parameters are optional if height(), width() or dimensions() function has been already called) 
+**`resizeFit(int: $width, int: $height):`** Defines the width and height of the image in pixels whichever fits the best, none of the edge will be cropped and image will never stretch. (parameters are optional if height(), width() or dimensions() function has been already called) 
 
 **`inCanvas($bg=null):`** If you want to generate image with any coloured background, eg. (#fff)
 
