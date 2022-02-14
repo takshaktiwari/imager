@@ -27,21 +27,43 @@ You can have some fake images of may be some placeholder images with specified d
 **`text($text='Placeholder Image', $format=[]):`** Write text on the image and format the text as well. Possible format array keys are: size, color, align, valign, angle. Eg. 
 
     \Placeholder::dimensions(500, 500)
-    	->text('dummy text', [
-    		'size'	=>	50,
-    		'color'	=>	'#000',
-    		'align'	=>	'center',
-    		'valign'	=>	'center',
-    		'angle'		=>	45
-    	])
-    	->response();
+        ->text('dummy text', [
+            'size'  =>  50,
+            'color' =>  '#000',
+            'align' =>  'center',
+            'valign'    =>  'center',
+            'angle'     =>  45
+        ])
+        ->response();
 
 **`url():`** Generates the local URL for given type of image. Specified image can be also called by this URL
 
 For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
 
 Default values:
-`$width = 500;` `$height = 500;` `$background = '#ccc';` `$extension = 'jpg';` `$textFormating = [ 'size'	=>	24, 'color'	=>	'#000', 'align'	=>	'center', 'valign'	=>	'center', 'angle'		=>	null ];`
+`$width = 500;` `$height = 500;` `$background = '#ccc';` `$extension = 'jpg';` `$textFormating = [ 'size'   =>  24, 'color' =>  '#000', 'align' =>  'center', 'valign'  =>  'center', 'angle'       =>  null ];`
+
+### Generating placeholder image from URL
+Base URL: `http://project.com/imgr/placeholder?paramters`
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| width / w | 1000 | Width of image |
+| height / h | 1000 | Height of image |
+| background / bg | 'ccc' | Set the background |
+| extension / ext | 'jpg' | Image format |
+| text |  | Text on image |
+| text_color |  | Color of text (if text parameter available)  |
+| text_size | 24 | Size of the text (if text parameter available)  |
+| text_angle |  | Image rotation angle (if text parameter available)  |
+| text_align | center | Text alignment (if text parameter available)  |
+| text_valign | center | Vertical alignment (if text parameter available)  |
+| blur | 1 | Blur image, pass the blur amount  |
+| greyscale | | Make image greyscale  |
+| flip | | Flip the image. Possible values: v / h |
+| rotate | | Rotates image  |
+
+Sample image URL: `http://project.com/imgr/placeholder?w=150&h=150&text=JD&text_size=60&background=c00c0c`
 
 ## Picsum (Fake image provider)
 
@@ -120,11 +142,11 @@ Getting Default dummy image
 Customised Text in image
 
     \Placeholder::text('Some Info Text', [
-    	'size'	=>	24,
-    	'color'	=>	'#000',
-    	'align'	=>	'center',
-    	'valign'	=>	'center',
-    	'angle'		=>	45
+        'size'  =>  24,
+        'color' =>  '#000',
+        'align' =>  'center',
+        'valign'    =>  'center',
+        'angle'     =>  45
     ])->response();
 
 Create dummy user avatar
@@ -150,19 +172,19 @@ Resize image during save
 Save at multiple locations
 
     Picsum::dimensions(500, 500)
-    	->save(path:'path/image.jpg')
-    	->save(path:'path/image-md.jpg', 300)
-    	->save(path:'path/image-sm.jpg', 100);
+        ->save(path:'path/image.jpg')
+        ->save(path:'path/image-md.jpg', 300)
+        ->save(path:'path/image-sm.jpg', 100);
 
-Get image url
+Get image URL
 
     Picsum::dimensions(500, 500)->image()->url();
 
 Save path to model
 
     Picsum::dimensions(500, 500)
-    	->save(path:'path/image.jpg')
-    	->saveModel(User::first(), 'profime_img', path:'path/image.jpg');
+        ->save(path:'path/image.jpg')
+        ->saveModel(User::first(), 'profime_img', path:'path/image.jpg');
 
 Get URL for the image
 
@@ -172,7 +194,7 @@ Other intervention callback function
 
     $img = Picsum::image()->flip();
     $img->others(function($img){
-    	$img->crop(100, 100);
+        $img->crop(100, 100);
     });
     return $img->response();
 
@@ -180,8 +202,8 @@ Save image to a model
 
     $post = Post::first();
     Picsum::dimensions(500, 500)
-    	->save(path:'path/image.jpg')->saveModel($post, 'image_lg', path:'path/image.jpg')
-    	->save(path:'path/image-sm.jpg', 100)->saveModel($post, 'image_sm', path:'path/image-sm.jpg')
-    	->image(500, 400)
-    	->save(path:'path/image.jpg')->saveModel(Post::find(2), 'image_lg', path:'path/image.jpg')
-    	->url()
+        ->save(path:'path/image.jpg')->saveModel($post, 'image_lg', path:'path/image.jpg')
+        ->save(path:'path/image-sm.jpg', 100)->saveModel($post, 'image_sm', path:'path/image-sm.jpg')
+        ->image(500, 400)
+        ->save(path:'path/image.jpg')->saveModel(Post::find(2), 'image_lg', path:'path/image.jpg')
+        ->url()
