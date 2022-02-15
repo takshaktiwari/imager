@@ -17,6 +17,7 @@ class PicsumGenerator
 	protected $disk;
 	protected $storage;
 	protected $sourceDir;
+	protected $basePath;
 	protected $img;
 	protected $extension = 'jpg';
 

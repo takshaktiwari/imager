@@ -146,4 +146,10 @@ trait GeneratorTrait {
 		return $this;
 	}
 
+	public function destroy()
+	{
+		$this->img = null;
+		return $this;
+	}
+
 }

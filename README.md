@@ -151,6 +151,8 @@ Following methods can be called to all above tools
 
 **`others(function($image){}):`** Passes the image through other function (intervention/image) for further manipulations.
 
+**`destroy():`** Destroys the created image instance.
+
 
 ## Placeholder - Some Uses
 Getting Default dummy image
