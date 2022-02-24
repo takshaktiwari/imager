@@ -59,9 +59,9 @@ class PicsumGenerator
 	}
 
 	public function seed($count=10)
-	{	
+    {
 		$this->seed = true;
-		for ($i=0; $i < $count; $i++) { 
+        for ($i = 0; $i < $count; $i++) {
 			$fileName = Str::of(microtime())->slug('-')->append('.jpg');
 			copy(
 				'https://picsum.photos/'.$this->width.'/'.$this->height,
@@ -98,18 +98,35 @@ class PicsumGenerator
 		return count($files) ? false : true;
 	}
 
-	public function image($width=null, $height=null)
-	{
-		$this->width = $width ? $width : $this->width;
-		$this->height = $height ? $height : $this->height;
-
-		$files = $this->storage->files($this->sourceDir);
+    public function fetchImage()
+    {
+        $files = $this->storage->files($this->sourceDir);
 		$files = array_filter($files, function($file){
 			return Str::of($file)->contains('gitignore') ? false : true;
 		});
-		shuffle($files);
+        if (!count($files)) {
+            $this->seed();
+            $files = $this->storage->files($this->sourceDir);
+            $files = array_filter($files, function ($file) {
+                return Str::of($file)->contains('gitignore') ? false : true;
+            });
+        }
 
-		$this->img = \Image::make($this->storage->path(end($files)))->crop($this->width, $this->height);
+        shuffle($files);
+        return end($files);
+    }
+
+    public function image($width = null, $height = null)
+    {
+        $this->width = $width ? $width : $this->width;
+        $this->height = $height ? $height : $this->height;
+
+        $this->img = \Image::make(
+            $this->storage->path(
+                $this->fetchImage()
+            )
+        )
+        ->crop($this->width, $this->height);
 		return $this;
 	}
 
