@@ -95,7 +95,7 @@ class PicsumGenerator
 	public function isEmpty()
 	{
 		$files = $this->storage->files($this->sourceDir);
-		return count($files) ? false : true;
+		return (count($files) > 1) ? false : true;
 	}
 
     public function fetchImage()
