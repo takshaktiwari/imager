@@ -59,14 +59,18 @@ class PicsumGenerator
 	}
 
 	public function seed($count=10)
-    {
+    	{
 		$this->seed = true;
-        for ($i = 0; $i < $count; $i++) {
+		for ($i = 0; $i < $count; $i++) {
 			$fileName = Str::of(microtime())->slug('-')->append('.jpg');
-			copy(
-				'https://picsum.photos/'.$this->width.'/'.$this->height,
-				$this->storage->path($this->sourceDir).$fileName
-			);
+			try {
+				copy(
+				    'https://picsum.photos/'.$this->width.'/'.$this->height,
+				    $this->storage->path($this->sourceDir).$fileName
+				);
+			} catch (\Exception $e) {
+				logger($e->getMessage());
+			}
 		}
 		return $this;
 	}
