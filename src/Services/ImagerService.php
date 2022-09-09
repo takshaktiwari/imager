@@ -1,10 +1,8 @@
 <?php
+
 namespace Takshak\Imager\Services;
 
-use Illuminate\Filesystem\Filesystem;
 use Image;
-use Storage;
-use Str;
 use Takshak\Imager\Traits\GeneratorTrait;
 
 class ImagerService
@@ -73,5 +71,4 @@ class ImagerService
         $this->img = Image::canvas($this->width, $this->height, $bg)->insert($this->img, 'center');
         return $this;
     }
-
 }

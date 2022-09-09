@@ -1,7 +1,7 @@
 
 # Introduction
 
-This package gives you three different tools, which are useful to fake, seed, generate placeholders and manipulate images. These tools are named as Picsum (provides images to seed database, or helps in creating model factories), Placeholder (generates placeholder images for specific location in different sizes and colours), Imager (manipulates images in desired sizes, can be used to resize an image if you don't want to cut any of edge of the images). These manipulations can be also called from the URL.
+This package gives you three different tools, which are useful to fake, seed, generate placeholders and manipulate images. These tools are named as Picsum (provides images to seed database, or helps in creating model factories), Placeholder (generates placeholder images for specific location in different sizes and colors), Imager (manipulates images in desired sizes, can be used to resize an image if you don't want to cut any of edge of the images). These manipulations can be also called from the URL.
 
 ## Quick Start
 
@@ -10,6 +10,18 @@ Install the package with composer
     composer require takshak/imager
 
 Simple uses
+
+    use Takshak\Imager\Facades\Picsum;
+    use Takshak\Imager\Facades\Placeholder;
+    use Takshak\Imager\Facades\Imager;
+
+    Picsum::dimensions(500, 500)->response();
+
+    Placeholder::dimensions(500, 500)->text('Some Info Text')->response();
+
+    Imager::init($request->file('image_file'))->resizeFit(500, 500)->response();
+
+User can also use directly with the respective aliases without using the class name at the top. eg: 
 
     \Picsum::dimensions(500, 500)->response();
 
@@ -59,9 +71,9 @@ Base URL: `http://project.com/imgr/placeholder?paramters`
 | text_align | center | Text alignment (if text parameter available)  |
 | text_valign | center | Vertical alignment (if text parameter available)  |
 | blur | 1 | Blur image, pass the blur amount  |
-| greyscale | | Make image greyscale  |
+| greyscale | | Make image greyscale (pass the boolean as 0 or 1) |
 | flip | | Flip the image. Possible values: v / h |
-| rotate | | Rotates image  |
+| rotate | | Rotates image (angle of rotation in numeric)  |
 
 Sample image URL: `http://project.com/imgr/placeholder?w=150&h=150&text=JD&text_size=60&background=c00c0c`
 
@@ -87,6 +99,27 @@ It provides some images to fake database or can used as placeholder. This stores
 
 For all other functions please refer to [common methods](https://github.com/takshaktiwari/imager#common-methods)
 
+### Seeding images to the bucket
+
+To seed / write some images (to be served when you request for better performance of picsum) execute following command
+
+    php artisan imager:seed 
+
+This can also receive several argument and options:
+>>> arguments
+count: number of images to be seeded (default '50')
+
+>>> options:
+--disk: storage disk type (default 'local')
+--bucket: this is the folder name where the images will be kept (default 'imgr-bucket/')
+--action: action of the command. possible values are, seed, refresh, flush (default 'seed')
+--width: width of the images to be seeded, (default '2000')
+--height: height of the images to be seeded, (default '1500')
+
+eg: 
+`php artisan imager:seed 25`
+`php artisan imager:seed 25 --width=1200 --height=800`
+
 ### Generating picsum image from URL
 Base URL: `http://project.com/imgr/picsum?paramters`
 
@@ -99,7 +132,7 @@ Base URL: `http://project.com/imgr/picsum?paramters`
 | seed | 10 | Seed new images |
 | flush |  | Flush all bucket images |
 | blur | 1 | Blur image, pass the blur amount  |
-| greyscale | | Make image greyscale  |
+| greyscale | | Make image greyscale (pass the boolean as 0 or 1) |
 | flip | | Flip the image. Possible values: v / h |
 | rotate | | Rotates image, (accepts integer, eg. ?rotage=45)  |
 
@@ -227,3 +260,31 @@ Save image to a model
         ->image(500, 400)
         ->save(path:'path/image.jpg')->saveModel(Post::find(2), 'image_lg', path:'path/image.jpg')
         ->url()
+
+## Imager - Some Uses
+
+Saving three variants of the same image in `storage/app/public/images/... .jpg`
+
+    Imager::init($request->file('thumbnail'))
+        ->resizeFit(800, 500)
+        ->basePath(Storage::disk('public')->path('/'))
+        ->save('images/large.jpg')
+        ->save('images/medium.jpg', 400)
+        ->save('images/small.jpg', 200);
+
+    # Or you can pass the path as follow
+    Imager::init($request->file('thumbnail'))
+        ->resizeFit(800, 500)
+        ->save(Storage::disk('public')->path('images/large.jpg'))
+        ->save(Storage::disk('public')->path('images/medium.jpg'), 400)
+        ->save(Storage::disk('public')->path('images/small.jpg'), 200);
+
+Save image with a canvas of white(default) background and some extra manipulation:
+
+    Imager::init($request->file('thumbnail'))
+        ->resizeFit(800, 500)->inCanvas('#fff') // resize to fit in given dimension
+        ->inCanvas('#fff') // put the white canvas if image is shorter
+        ->rotate(45)    // rotate image at 45 deg.
+        ->flip('h')   // flip image horizontally (use 'v' for vertical flip)
+        ->save(Storage::disk('public')->path('images/large.jpg')) // save the image
+        ->save(Storage::disk('public')->path('images/medium.jpg'), 400) // save another with small size of 400
