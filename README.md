@@ -106,19 +106,22 @@ To seed / write some images (to be served when you request for better performanc
     php artisan imager:seed 
 
 This can also receive several argument and options:
->>> arguments
+
+**arguments:**
+
 count: number of images to be seeded (default '50')
 
->>> options:
+**options:**
+
 --disk: storage disk type (default 'local')
 --bucket: this is the folder name where the images will be kept (default 'imgr-bucket/')
 --action: action of the command. possible values are, seed, refresh, flush (default 'seed')
 --width: width of the images to be seeded, (default '2000')
 --height: height of the images to be seeded, (default '1500')
 
-eg: 
-`php artisan imager:seed 25`
-`php artisan imager:seed 25 --width=1200 --height=800`
+    php artisan imager:seed 25
+
+    php artisan imager:seed 25 --width=1200 --height=800
 
 ### Generating picsum image from URL
 Base URL: `http://project.com/imgr/picsum?paramters`
