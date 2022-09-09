@@ -108,16 +108,15 @@ To seed / write some images (to be served when you request for better performanc
 This can also receive several argument and options:
 
 **arguments:**
-
-count: number of images to be seeded (default '50')
+> - `count`: number of images to be seeded (default '50')
 
 **options:**
-
---disk: storage disk type (default 'local')
---bucket: this is the folder name where the images will be kept (default 'imgr-bucket/')
---action: action of the command. possible values are, seed, refresh, flush (default 'seed')
---width: width of the images to be seeded, (default '2000')
---height: height of the images to be seeded, (default '1500')
+> 
+> - `--disk`: storage disk type (default 'local')
+> - `--bucket`: this is the folder name where the images will be kept (default 'imgr-bucket/')
+> - `--action`: action of the command. possible values are, seed, refresh, flush (default 'seed')
+> - `--width`: width of the images to be seeded, (default '2000')
+> - `--height`: height of the images to be seeded, (default '1500')
 
     php artisan imager:seed 25
 
