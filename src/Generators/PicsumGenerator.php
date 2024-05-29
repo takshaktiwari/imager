@@ -65,7 +65,7 @@ class PicsumGenerator
             $fileName = Str::of(microtime())->slug('-')->append('.jpg');
             try {
                 \Image::make('https://picsum.photos/'. $this->width . '/' . $this->height)
-                    ->save($this->storage->path($fileName));
+                    ->save($this->storage->path($this->sourceDir . $fileName));
             } catch (\Exception $e) {
                 logger($e->getMessage());
             }
