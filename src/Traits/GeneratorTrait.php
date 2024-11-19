@@ -140,10 +140,10 @@ trait GeneratorTrait {
 		return $this;
 	}
 
-	public function others($method)
+	public function others($method, $raw = false)
 	{
 		$method($this->img);
-		return $this;
+		return $raw ? $this->img : $this;
 	}
 
 	public function destroy()
