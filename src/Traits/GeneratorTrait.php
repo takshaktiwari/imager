@@ -82,7 +82,7 @@ trait GeneratorTrait {
 	        $this->filePath = $path;
 	
 	        $imageContent = (string)$this->img->encode();
-	        Storage::disk('s3')->put($path, $imageContent, $visibility);
+	        \Storage::disk('s3')->put($path, $imageContent, $visibility);
 	        return $this;
 	}
 
