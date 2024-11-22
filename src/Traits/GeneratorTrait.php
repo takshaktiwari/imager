@@ -69,6 +69,23 @@ trait GeneratorTrait {
 		return $this;
 	}
 
+	public function saveS3($path, $width = null, $visibility = 'public')
+    	{
+	        if (!$this->img) {
+	            $this->image();
+	        }
+	
+	        if ($width) {
+	            $this->resizeWidth($width);
+	        }
+	
+	        $this->filePath = $path;
+	
+	        $imageContent = (string)$this->img->encode();
+	        Storage::disk('s3')->put($path, $imageContent, $visibility);
+	        return $this;
+	}
+
 	public function copy($path, $width=null, $quality=80)
 	{
 		$this->store($path, $width, $quality=80);
